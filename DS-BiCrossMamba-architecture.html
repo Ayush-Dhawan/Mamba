@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DS-BiCrossMamba — System Architecture</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:#0A0E17; }
+  body { display:flex; justify-content:center; padding: 24px 12px 60px; }
+  .wrap { max-width: 1900px; width:100%; }
+  svg { width:100%; height:auto; display:block; }
+  text { font-family:'IBM Plex Mono', monospace; }
+
+  .diagram-title { font-family:'IBM Plex Sans', sans-serif; font-weight:700; font-size:38px; fill:#E8ECF4; letter-spacing:0.5px; }
+  .diagram-subtitle { font-family:'IBM Plex Mono', monospace; font-size:13.5px; fill:#8B93A7; }
+
+  .module-panel { fill:#0E131F; stroke:#232B3D; stroke-width:1.5; }
+  .module-num-circle { fill:#161F30; stroke:#9AA5B8; stroke-width:1.5; }
+  .module-num-text { font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; fill:#E8ECF4; }
+  .eyebrow { font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:2.5px; fill:#5B6478; }
+  .module-title { font-family:'IBM Plex Sans', sans-serif; font-weight:700; font-size:20px; fill:#E8ECF4; }
+  .module-subnote { font-family:'IBM Plex Mono', monospace; font-style:italic; font-size:11px; fill:#8B93A7; }
+  .badge-pill { fill:#161F30; stroke:#9AA5B8; stroke-width:1.2; }
+  .badge-text { font-family:'IBM Plex Mono', monospace; font-size:11.5px; fill:#E8ECF4; font-weight:600; }
+
+  .box { fill:#121826; stroke:#2A3348; stroke-width:1.4; }
+  .box-output { fill:#161F30; }
+  .box-title { font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px; fill:#E8ECF4; }
+  .box-detail { font-family:'IBM Plex Mono', monospace; fill:#8B93A7; }
+
+  .branch-header { fill:#161F30; stroke-width:1.6; }
+  .branch-header-text { font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:13.5px; fill:#E8ECF4; }
+
+  .strip-box { fill:#141B2C; stroke:#2A3348; stroke-width:1.2; }
+  .strip-text { font-family:'IBM Plex Mono', monospace; font-size:11.5px; fill:#8B93A7; }
+
+  .flow-arrow { stroke:#9AA5B8; stroke-width:2; fill:none; }
+  .feedback-arrow { stroke:#2EC4B6; stroke-width:2; stroke-dasharray:7 5; fill:none; }
+  .alert-arrow { stroke:#FF5470; stroke-width:2; stroke-dasharray:3 4; fill:none; }
+  .flow-label { font-family:'IBM Plex Mono', monospace; font-size:10.5px; fill:#5B6478; font-style:italic; }
+  .alert-label { font-family:'IBM Plex Mono', monospace; font-size:10.5px; fill:#FF5470; font-style:italic; }
+  .fb-label { font-family:'IBM Plex Mono', monospace; font-size:10.5px; fill:#2EC4B6; letter-spacing:1.5px; }
+
+  .legend-text { font-family:'IBM Plex Mono', monospace; font-size:12px; fill:#E8ECF4; }
+  .legend-note { font-family:'IBM Plex Mono', monospace; font-size:11px; fill:#8B93A7; }
+
+  .module-panel:hover { stroke:#9AA5B8; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<svg viewBox="0 0 1900 2896" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <marker id="arrowFlow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#9AA5B8"/>
+  </marker>
+  <marker id="arrowFB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#2EC4B6"/>
+  </marker>
+  <marker id="arrowAlert" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#FF5470"/>
+  </marker>
+  <linearGradient id="titleGlow" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#3DA9FC" stop-opacity="0.0"/>
+    <stop offset="50%" stop-color="#F2C14E" stop-opacity="0.55"/>
+    <stop offset="100%" stop-color="#C77DFF" stop-opacity="0.0"/>
+  </linearGradient>
+</defs>
+
+<g><rect x="40.0" y="25.3" width="12.7" height="20.7" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="60.7" y="22.9" width="12.7" height="23.1" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="81.4" y="20.5" width="12.7" height="25.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="102.2" y="18.2" width="12.7" height="27.8" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="122.9" y="16.1" width="12.7" height="29.9" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="143.6" y="14.3" width="12.7" height="31.7" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="164.3" y="12.8" width="12.7" height="33.2" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="185.1" y="11.7" width="12.7" height="34.3" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="205.8" y="11.0" width="12.7" height="35.0" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="226.5" y="10.7" width="12.7" height="35.3" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="247.2" y="10.8" width="12.7" height="35.2" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="268.0" y="11.3" width="12.7" height="34.7" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="288.7" y="12.3" width="12.7" height="33.7" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="309.4" y="13.6" width="12.7" height="32.4" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="330.1" y="15.3" width="12.7" height="30.7" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="350.8" y="17.2" width="12.7" height="28.8" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="371.6" y="19.3" width="12.7" height="26.7" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="392.3" y="21.6" width="12.7" height="24.4" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="413.0" y="23.9" width="12.7" height="22.1" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="433.7" y="26.3" width="12.7" height="19.7" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="454.5" y="28.6" width="12.7" height="17.4" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="475.2" y="30.8" width="12.7" height="15.2" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="495.9" y="32.8" width="12.7" height="13.2" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="516.6" y="34.6" width="12.7" height="11.4" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="537.3" y="36.2" width="12.7" height="9.8" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="558.1" y="37.5" width="12.7" height="8.5" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="578.8" y="38.5" width="12.7" height="7.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="599.5" y="39.2" width="12.7" height="6.8" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="620.2" y="39.7" width="12.7" height="6.3" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="641.0" y="40.0" width="12.7" height="6.0" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="661.7" y="40.0" width="12.7" height="6.0" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="682.4" y="39.8" width="12.7" height="6.2" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="703.1" y="39.6" width="12.7" height="6.4" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="723.9" y="39.1" width="12.7" height="6.9" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="744.6" y="38.4" width="12.7" height="7.6" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="765.3" y="37.5" width="12.7" height="8.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="786.0" y="36.3" width="12.7" height="9.7" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="806.7" y="34.9" width="12.7" height="11.1" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="827.5" y="33.3" width="12.7" height="12.7" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="848.2" y="31.5" width="12.7" height="14.5" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="868.9" y="29.5" width="12.7" height="16.5" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="889.6" y="27.5" width="12.7" height="18.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="910.4" y="25.3" width="12.7" height="20.7" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="931.1" y="23.2" width="12.7" height="22.8" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="951.8" y="21.1" width="12.7" height="24.9" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="972.5" y="19.1" width="12.7" height="26.9" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="993.3" y="17.3" width="12.7" height="28.7" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1014.0" y="15.7" width="12.7" height="30.3" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1034.7" y="14.5" width="12.7" height="31.5" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1055.4" y="13.6" width="12.7" height="32.4" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1076.1" y="13.0" width="12.7" height="33.0" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1096.9" y="12.9" width="12.7" height="33.1" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1117.6" y="13.1" width="12.7" height="32.9" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1138.3" y="13.8" width="12.7" height="32.2" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1159.0" y="14.8" width="12.7" height="31.2" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1179.8" y="16.2" width="12.7" height="29.8" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1200.5" y="18.0" width="12.7" height="28.0" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1221.2" y="19.9" width="12.7" height="26.1" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1241.9" y="22.1" width="12.7" height="23.9" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1262.7" y="24.4" width="12.7" height="21.6" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1283.4" y="26.8" width="12.7" height="19.2" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1304.1" y="29.1" width="12.7" height="16.9" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1324.8" y="31.4" width="12.7" height="14.6" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1345.5" y="33.4" width="12.7" height="12.6" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1366.3" y="35.3" width="12.7" height="10.7" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1387.0" y="36.9" width="12.7" height="9.1" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1407.7" y="38.2" width="12.7" height="7.8" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1428.4" y="39.2" width="12.7" height="6.8" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1449.2" y="39.8" width="12.7" height="6.2" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1469.9" y="40.0" width="12.7" height="6.0" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1490.6" y="39.9" width="12.7" height="6.1" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1511.3" y="39.4" width="12.7" height="6.6" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1532.0" y="38.7" width="12.7" height="7.3" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1552.8" y="37.7" width="12.7" height="8.3" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1573.5" y="36.5" width="12.7" height="9.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1594.2" y="35.1" width="12.7" height="10.9" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1614.9" y="33.7" width="12.7" height="12.3" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1635.7" y="32.3" width="12.7" height="13.7" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1656.4" y="30.9" width="12.7" height="15.1" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1677.1" y="29.6" width="12.7" height="16.4" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1697.8" y="28.5" width="12.7" height="17.5" fill="#C77DFF" opacity="0.30" rx="1.5"/>
+<rect x="1718.6" y="27.6" width="12.7" height="18.4" fill="#3DA9FC" opacity="0.30" rx="1.5"/>
+<rect x="1739.3" y="26.9" width="12.7" height="19.1" fill="#F2C14E" opacity="0.30" rx="1.5"/>
+<rect x="1760.0" y="26.4" width="12.7" height="19.6" fill="#C77DFF" opacity="0.30" rx="1.5"/></g>
+<rect x="20.0" y="215.0" width="1760.0" height="434.0" rx="16" class="module-panel" />
+<circle cx="70" cy="255.0" r="17" class="module-num-circle"/>
+<text x="70" y="260.0" class="module-num-text" text-anchor="middle">01</text>
+<text x="100.0" y="241.0" class="eyebrow" text-anchor="start">MODULE 01</text>
+<text x="100.0" y="267.0" class="module-title" text-anchor="start">Circular Ingestion Buffer &amp; Shared Front-End Extraction</text>
+<rect x="1516.0" y="237.0" width="244.0" height="26.0" rx="13" class="badge-pill" />
+<text x="1638.0" y="254.0" class="badge-text" text-anchor="middle">⏱ under 5 ms buffer xfer</text>
+<text x="950.0" y="92.0" class="diagram-title" text-anchor="middle">DS-BiCrossMamba</text>
+<text x="950.0" y="118.0" class="diagram-subtitle" text-anchor="middle">Multi-Scale Hybrid Audio Deepfake Detector — real-time system architecture</text>
+<rect x="750.0" y="138.0" width="400.0" height="66.0" rx="9" class="box" style="stroke:#E8ECF4"/>
+<text x="950.0" y="160.0" class="box-title" text-anchor="middle" style="fill:#E8ECF4;font-size:12.6px">● LIVE INPUT</text>
+<text x="950.0" y="180.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">16 kHz mono PCM stream</text>
+<text x="950.0" y="199.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">10.0s window (160,000 smp) · 2.0s stride · 80% overlap</text>
+<path d="M950.0,204.0 L950.0,215.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="750.0" y="295.0" width="400.0" height="68.0" rx="9" class="box" style="stroke:#E8ECF4"/>
+<text x="950.0" y="317.0" class="box-title" text-anchor="middle" style="fill:#E8ECF4;font-size:12.6px">Circular FIFO Ring Buffer</text>
+<text x="950.0" y="337.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">(1, 160,000) tensor · GPU pinned memory</text>
+<text x="950.0" y="356.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">shift +32,000 new samples every 2.0 s</text>
+<path d="M950.0,363.0 L950.0,383.0 L314.7,383.0 L314.7,417.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,363.0 L950.0,383.0 L900.0,383.0 L900.0,417.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,363.0 L950.0,383.0 L1485.3,383.0 L1485.3,417.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="383.0" width="549.3" height="34.0" rx="8" class="branch-header" style="stroke:#3DA9FC"/>
+<text x="314.7" y="405.0" class="branch-header-text" text-anchor="middle">BRANCH A · Physical Linear STFT</text>
+<rect x="625.3" y="383.0" width="549.3" height="34.0" rx="8" class="branch-header" style="stroke:#F2C14E"/>
+<text x="900.0" y="405.0" class="branch-header-text" text-anchor="middle">BRANCH B · Perceptual Log-Mel</text>
+<rect x="1210.7" y="383.0" width="549.3" height="34.0" rx="8" class="branch-header" style="stroke:#C77DFF"/>
+<text x="1485.3" y="405.0" class="branch-header-text" text-anchor="middle">BRANCH C · Parametric SincNet</text>
+<rect x="40.0" y="427.0" width="549.3" height="78.0" rx="9" class="box" />
+<text x="55.0" y="449.0" class="box-title" text-anchor="start" style="font-size:11.5px">Parameters</text>
+<text x="55.0" y="469.0" class="box-detail" text-anchor="start" style="font-size:10.3px">STFT: N_fft=2048 · hop=160 (10ms) · Hann win=2048</text>
+<text x="55.0" y="488.0" class="box-detail" text-anchor="start" style="font-size:10.3px">|X(t,f)| ∈ ℝ^(B×1025×1000)</text>
+<rect x="625.3" y="427.0" width="549.3" height="78.0" rx="9" class="box" />
+<text x="640.3" y="449.0" class="box-title" text-anchor="start" style="font-size:11.5px">Parameters</text>
+<text x="640.3" y="469.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Mel filterbank M ∈ ℝ^(1025×128), 0–8000 Hz (static)</text>
+<text x="640.3" y="488.0" class="box-detail" text-anchor="start" style="font-size:10.3px">S_mel = log(|X|·M + 1e-6) ∈ ℝ^(B×128×1000)</text>
+<rect x="1210.7" y="427.0" width="549.3" height="78.0" rx="9" class="box" />
+<text x="1225.7" y="449.0" class="box-title" text-anchor="start" style="font-size:11.5px">Parameters</text>
+<text x="1225.7" y="469.0" class="box-detail" text-anchor="start" style="font-size:10.3px">70 learnable sinc bandpass filters [f₁,f₂] on raw PCM</text>
+<text x="1225.7" y="488.0" class="box-detail" text-anchor="start" style="font-size:10.3px">2D conv attention gate → spatial mask M∈[0,1]</text>
+<rect x="40.0" y="515.0" width="549.3" height="56.0" rx="9" class="box" />
+<text x="55.0" y="537.0" class="box-title" text-anchor="start" style="font-size:11.5px">Projection</text>
+<text x="55.0" y="557.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Conv2d(1,256,k=(1025,1)) → BN2d → GELU</text>
+<rect x="625.3" y="515.0" width="549.3" height="56.0" rx="9" class="box" />
+<text x="640.3" y="537.0" class="box-title" text-anchor="start" style="font-size:11.5px">Projection</text>
+<text x="640.3" y="557.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Conv2d(1,256,k=(128,1)) → BN2d → GELU</text>
+<rect x="1210.7" y="515.0" width="549.3" height="56.0" rx="9" class="box" />
+<text x="1225.7" y="537.0" class="box-title" text-anchor="start" style="font-size:11.5px">Projection</text>
+<text x="1225.7" y="557.0" class="box-detail" text-anchor="start" style="font-size:10.3px">gated sinc features → linear proj → 256</text>
+<rect x="40.0" y="581.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#3DA9FC;stroke-width:2"/>
+<text x="314.7" y="608.0" class="box-title" text-anchor="middle">X_lin ∈ ℝ^(B×1000×256)</text>
+<rect x="625.3" y="581.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#F2C14E;stroke-width:2"/>
+<text x="900.0" y="608.0" class="box-title" text-anchor="middle">X_mel ∈ ℝ^(B×1000×256)</text>
+<rect x="1210.7" y="581.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#C77DFF;stroke-width:2"/>
+<text x="1485.3" y="608.0" class="box-title" text-anchor="middle">X_sinc ∈ ℝ^(B×1000×256)</text>
+<rect x="20.0" y="689.0" width="1760.0" height="410.0" rx="16" class="module-panel" />
+<circle cx="70" cy="729.0" r="17" class="module-num-circle"/>
+<text x="70" y="734.0" class="module-num-text" text-anchor="middle">02</text>
+<text x="100.0" y="715.0" class="eyebrow" text-anchor="start">MODULE 02</text>
+<text x="100.0" y="741.0" class="module-title" text-anchor="start">Tri-Stream Bidirectional Mamba Sequence Core</text>
+<text x="100.0" y="759.0" class="module-subnote" text-anchor="start">↻ hidden state h₁₀₀₀ carried from window t into h₀ of window t+1 — streaming recurrence</text>
+<rect x="1570.0" y="711.0" width="190.0" height="26.0" rx="13" class="badge-pill" />
+<text x="1665.0" y="728.0" class="badge-text" text-anchor="middle">⏱ under 35 ms core</text>
+<path d="M314.7,649.0 L314.7,689.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M900.0,649.0 L900.0,689.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1485.3,649.0 L1485.3,689.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="70.0" y="769.0" width="1620.0" height="40.0" rx="8" class="strip-box" />
+<text x="950.0" y="794.0" class="strip-text" text-anchor="middle">Noise / Silence Gating — stationary noise &amp; pauses drive B_t → 0, Δ_t → 0 (blocks writes to hidden state h_t)</text>
+<rect x="40.0" y="825.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="55.0" y="847.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Forward</text>
+<text x="55.0" y="867.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Forward sweep t=1→1000 · h₀ = h₁₀₀₀ (prev window)</text>
+<rect x="40.0" y="889.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="55.0" y="911.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Backward</text>
+<text x="55.0" y="931.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Backward sweep t=1000→1 · h'_init = 0</text>
+<rect x="40.0" y="953.0" width="549.3" height="68.0" rx="9" class="box" />
+<text x="55.0" y="975.0" class="box-title" text-anchor="start" style="font-size:11.5px">Branch Fusion</text>
+<text x="55.0" y="995.0" class="box-detail" text-anchor="start" style="font-size:10.0px">Concat [Y_fwd ‖ Flip(Y_bwd)] ∈ ℝ^(B×1000×512)</text>
+<text x="55.0" y="1014.0" class="box-detail" text-anchor="start" style="font-size:10.0px">→ Linear(512,256) → + residual add</text>
+<rect x="625.3" y="825.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="640.3" y="847.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Forward</text>
+<text x="640.3" y="867.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Forward sweep t=1→1000 · h₀ = h₁₀₀₀ (prev window)</text>
+<rect x="625.3" y="889.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="640.3" y="911.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Backward</text>
+<text x="640.3" y="931.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Backward sweep t=1000→1 · h'_init = 0</text>
+<rect x="625.3" y="953.0" width="549.3" height="68.0" rx="9" class="box" />
+<text x="640.3" y="975.0" class="box-title" text-anchor="start" style="font-size:11.5px">Branch Fusion</text>
+<text x="640.3" y="995.0" class="box-detail" text-anchor="start" style="font-size:10.0px">Concat [Y_fwd ‖ Flip(Y_bwd)] ∈ ℝ^(B×1000×512)</text>
+<text x="640.3" y="1014.0" class="box-detail" text-anchor="start" style="font-size:10.0px">→ Linear(512,256) → + residual add</text>
+<rect x="1210.7" y="825.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="1225.7" y="847.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Forward</text>
+<text x="1225.7" y="867.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Forward sweep t=1→1000 · h₀ = h₁₀₀₀ (prev window)</text>
+<rect x="1210.7" y="889.0" width="549.3" height="54.0" rx="9" class="box" />
+<text x="1225.7" y="911.0" class="box-title" text-anchor="start" style="font-size:11.5px">BiMamba — Backward</text>
+<text x="1225.7" y="931.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Backward sweep t=1000→1 · h'_init = 0</text>
+<rect x="1210.7" y="953.0" width="549.3" height="68.0" rx="9" class="box" />
+<text x="1225.7" y="975.0" class="box-title" text-anchor="start" style="font-size:11.5px">Branch Fusion</text>
+<text x="1225.7" y="995.0" class="box-detail" text-anchor="start" style="font-size:10.0px">Concat [Y_fwd ‖ Flip(Y_bwd)] ∈ ℝ^(B×1000×512)</text>
+<text x="1225.7" y="1014.0" class="box-detail" text-anchor="start" style="font-size:10.0px">→ Linear(512,256) → + residual add</text>
+<rect x="40.0" y="1031.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#3DA9FC;stroke-width:2"/>
+<text x="314.7" y="1058.0" class="box-title" text-anchor="middle">H_lin ∈ ℝ^(B×1000×256)</text>
+<rect x="625.3" y="1031.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#F2C14E;stroke-width:2"/>
+<text x="900.0" y="1058.0" class="box-title" text-anchor="middle">H_mel ∈ ℝ^(B×1000×256)</text>
+<rect x="1210.7" y="1031.0" width="549.3" height="44.0" rx="8" class="box box-output" style="stroke:#C77DFF;stroke-width:2"/>
+<text x="1485.3" y="1058.0" class="box-title" text-anchor="middle">H_sinc ∈ ℝ^(B×1000×256)</text>
+<rect x="20.0" y="1139.0" width="1760.0" height="328.0" rx="16" class="module-panel" />
+<circle cx="70" cy="1179.0" r="17" class="module-num-circle"/>
+<text x="70" y="1184.0" class="module-num-text" text-anchor="middle">03</text>
+<text x="100.0" y="1165.0" class="eyebrow" text-anchor="start">MODULE 03</text>
+<text x="100.0" y="1191.0" class="module-title" text-anchor="start">Multi-Stream Mutual Cross-Attention (MCA) &amp; Channel Gating</text>
+<path d="M314.7,1099.0 L314.7,1139.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M900.0,1099.0 L900.0,1139.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1485.3,1099.0 L1485.3,1139.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="1219.0" width="549.3" height="64.0" rx="9" class="box" style="stroke:#3DA9FC"/>
+<text x="55.0" y="1241.0" class="box-title" text-anchor="start" style="fill:#3DA9FC;font-size:12.0px">Linear → Mel Cross-Attn</text>
+<text x="55.0" y="1261.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Q = H_lin , K/V = H_mel</text>
+<path d="M314.7,1283.0 L314.7,1303.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="625.3" y="1219.0" width="549.3" height="64.0" rx="9" class="box" style="stroke:#F2C14E"/>
+<text x="640.3" y="1241.0" class="box-title" text-anchor="start" style="fill:#F2C14E;font-size:12.0px">Mel → Linear Cross-Attn</text>
+<text x="640.3" y="1261.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Q = H_mel , K/V = H_lin</text>
+<path d="M900.0,1283.0 L900.0,1303.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="1210.7" y="1219.0" width="549.3" height="64.0" rx="9" class="box" style="stroke:#C77DFF"/>
+<text x="1225.7" y="1241.0" class="box-title" text-anchor="start" style="fill:#C77DFF;font-size:12.0px">Sinc Cross-Attn</text>
+<text x="1225.7" y="1261.0" class="box-detail" text-anchor="start" style="font-size:10.3px">Q = H_sinc , K/V = [H_lin ‖ H_mel]</text>
+<path d="M1485.3,1283.0 L1485.3,1303.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="280.0" y="1303.0" width="1240.0" height="76.0" rx="9" class="box" style="stroke:#9AA5B8"/>
+<text x="295.0" y="1325.0" class="box-title" text-anchor="start" style="fill:#9AA5B8;font-size:13px">Squeeze-and-Excitation Recalibration</text>
+<text x="295.0" y="1345.0" class="box-detail" text-anchor="start" style="font-size:10.6px">concat cross-attended streams → adaptive channel gate g ∈ ℝ^256</text>
+<text x="295.0" y="1364.0" class="box-detail" text-anchor="start" style="font-size:10.6px">replay / lossy-codec attack ⇒ g_lin → 0 (down-weight) · g_mel → 1 (prioritize prosody)</text>
+<path d="M950.0,1379.0 L950.0,1399.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="750.0" y="1399.0" width="400.0" height="44.0" rx="8" class="box box-output" style="stroke:#E8ECF4;stroke-width:2"/>
+<text x="950.0" y="1426.0" class="box-title" text-anchor="middle">Z ∈ ℝ^(B×1000×256) — fused sequence tensor</text>
+<rect x="20.0" y="1507.0" width="1760.0" height="378.0" rx="16" class="module-panel" />
+<circle cx="70" cy="1547.0" r="17" class="module-num-circle"/>
+<text x="70" y="1552.0" class="module-num-text" text-anchor="middle">04</text>
+<text x="100.0" y="1533.0" class="eyebrow" text-anchor="start">MODULE 04</text>
+<text x="100.0" y="1559.0" class="module-title" text-anchor="start">Classification, Real-Time Smoothing &amp; Aggregation</text>
+<rect x="1507.0" y="1529.0" width="253.0" height="26.0" rx="13" class="badge-pill" />
+<text x="1633.5" y="1546.0" class="badge-text" text-anchor="middle">⏱ under 200 ms end-to-end</text>
+<path d="M950.0,1443.0 L950.0,1507.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="280.0" y="1587.0" width="1240.0" height="54.0" rx="9" class="box" />
+<text x="900.0" y="1609.0" class="box-title" text-anchor="middle" style="font-size:12.6px">Attentive Statistics Pooling</text>
+<text x="900.0" y="1629.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">pool Z over T=1000 frames → global embedding z ∈ ℝ^(B×256)</text>
+<rect x="280.0" y="1653.0" width="1240.0" height="54.0" rx="9" class="box" />
+<text x="900.0" y="1675.0" class="box-title" text-anchor="middle" style="font-size:12.6px">Classification Head</text>
+<text x="900.0" y="1695.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">MLP: Linear(256,64) → GELU → Dropout(0.3) → Linear(64,2) → Softmax → P_k ∈ [0,1]</text>
+<rect x="280.0" y="1719.0" width="1240.0" height="54.0" rx="9" class="box" />
+<text x="900.0" y="1741.0" class="box-title" text-anchor="middle" style="font-size:12.6px">Gaussian Window Weighting</text>
+<text x="900.0" y="1761.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">w(t) = exp(−(t−5)²/2σ²), σ=2.0 — suppresses edges (0–2s, 8–10s), boosts center (3–7s)</text>
+<rect x="280.0" y="1785.0" width="1240.0" height="76.0" rx="9" class="box" />
+<text x="900.0" y="1807.0" class="box-title" text-anchor="middle" style="font-size:12.6px">Asymmetric EMA  →  S_t</text>
+<text x="900.0" y="1827.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">α = 0.75 fast attack (P_k &gt; S_t−1)  ·  α = 0.15 slow decay (P_k ≤ S_t−1)</text>
+<text x="900.0" y="1846.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">⚡ instant override: P_k &gt; 0.88 → bypass EMA, immediate high-confidence alert</text>
+<rect x="20.0" y="1925.0" width="1760.0" height="402.0" rx="16" class="module-panel" />
+<circle cx="70" cy="1965.0" r="17" class="module-num-circle"/>
+<text x="70" y="1970.0" class="module-num-text" text-anchor="middle">05</text>
+<text x="100.0" y="1951.0" class="eyebrow" text-anchor="start">MODULE 05</text>
+<text x="100.0" y="1977.0" class="module-title" text-anchor="start">Zero-Day k-NN Retrieval &amp; Automated Triaging Matrix</text>
+<path d="M950.0,1885.0 L950.0,1925.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="280.0" y="2005.0" width="1240.0" height="56.0" rx="9" class="box" style="stroke:#2EC4B6"/>
+<text x="900.0" y="2027.0" class="box-title" text-anchor="middle" style="fill:#2EC4B6;font-size:12.6px">FAISS In-Memory Vector Database</text>
+<text x="900.0" y="2047.0" class="box-detail" text-anchor="middle" style="font-size:10.6px">verified bona fide + harvested zero-day spoof embeddings</text>
+<rect x="280.0" y="2073.0" width="1240.0" height="70.0" rx="9" class="box" />
+<text x="900.0" y="2095.0" class="box-title" text-anchor="middle" style="font-size:12.6px">Multi-Factor Context Engine</text>
+<text x="900.0" y="2115.0" class="box-detail" text-anchor="middle" style="font-size:10.3px">cosine distance d_kNN(z, nearest spoof cluster) combined with smoothed score S_t</text>
+<text x="900.0" y="2134.0" class="box-detail" text-anchor="middle" style="font-size:10.3px">+ telephony metadata: ANI spoof check · carrier/cellular vs SIP trunk · SIM-swap &lt;72h · IVR bot velocity</text>
+<rect x="40.0" y="2163.0" width="549.3" height="140.0" rx="9" class="box" style="stroke:#2EC4B6"/>
+<text x="55.0" y="2185.0" class="box-title" text-anchor="start" style="fill:#2EC4B6;font-size:12.2px">GREEN ZONE · S_t &lt; 0.30</text>
+<text x="55.0" y="2205.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Silent pass</text>
+<text x="55.0" y="2224.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Agent UI shows “Verified” badge</text>
+<rect x="625.3" y="2163.0" width="549.3" height="140.0" rx="9" class="box" style="stroke:#F2C14E"/>
+<text x="640.3" y="2185.0" class="box-title" text-anchor="start" style="fill:#F2C14E;font-size:12.2px">YELLOW ZONE · 0.30 ≤ S_t ≤ 0.80</text>
+<text x="640.3" y="2205.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Telemetry verified → suppress silently</text>
+<text x="640.3" y="2224.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Telemetry unverified → auto push / FaceID step-up</text>
+<rect x="1210.7" y="2163.0" width="549.3" height="140.0" rx="9" class="box" style="stroke:#FF5470"/>
+<text x="1225.7" y="2185.0" class="box-title" text-anchor="start" style="fill:#FF5470;font-size:12.2px">RED ZONE · S_t &gt; 0.80 or instant P_k &gt; 0.88</text>
+<text x="1225.7" y="2205.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Lock sensitive actions (wires, profile edits)</text>
+<text x="1225.7" y="2224.0" class="box-detail" text-anchor="start" style="font-size:10.4px">Route to Level-2 Fraud Ops + forensic anomaly summary</text>
+<path d="M1480.0,1861.0 L1485.3,2163.0" class="alert-arrow" marker-end="url(#arrowAlert)"/>
+<text x="1512.7" y="2006.0" class="alert-label" text-anchor="middle">instant override → Red Zone</text>
+<rect x="20.0" y="2367.0" width="1760.0" height="254.0" rx="16" class="module-panel" />
+<circle cx="70" cy="2407.0" r="17" class="module-num-circle"/>
+<text x="70" y="2412.0" class="module-num-text" text-anchor="middle">06</text>
+<text x="100.0" y="2393.0" class="eyebrow" text-anchor="start">MODULE 06</text>
+<text x="100.0" y="2419.0" class="module-title" text-anchor="start">Continual Learning &amp; Feedback Lifecycle</text>
+<path d="M950.0,2327.0 L950.0,2367.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<text x="950.0" y="2357.0" class="flow-label" text-anchor="middle">borderline / failed-challenge cases</text>
+<rect x="40.0" y="2447.0" width="549.3" height="150.0" rx="9" class="box" style="stroke:#2EC4B6"/>
+<text x="55.0" y="2469.0" class="box-title" text-anchor="start" style="fill:#2EC4B6;font-size:12.6px">High-Entropy Data Harvesting</text>
+<text x="55.0" y="2489.0" class="box-detail" text-anchor="start" style="font-size:10.4px">borderline confidence 0.40 ≤ P_k ≤ 0.60</text>
+<text x="55.0" y="2508.0" class="box-detail" text-anchor="start" style="font-size:10.4px">+ failed customer step-up challenges</text>
+<text x="55.0" y="2527.0" class="box-detail" text-anchor="start" style="font-size:10.4px">→ routed to S3 object-store queue</text>
+<rect x="625.3" y="2447.0" width="549.3" height="150.0" rx="9" class="box" style="stroke:#2EC4B6"/>
+<text x="640.3" y="2469.0" class="box-title" text-anchor="start" style="fill:#2EC4B6;font-size:12.6px">Zero-Day Vector Ingestion</text>
+<text x="640.3" y="2489.0" class="box-detail" text-anchor="start" style="font-size:10.4px">newly discovered spoof vectors</text>
+<text x="640.3" y="2508.0" class="box-detail" text-anchor="start" style="font-size:10.4px">indexed into active FAISS store</text>
+<text x="640.3" y="2527.0" class="box-detail" text-anchor="start" style="font-size:10.4px">for zero-latency mitigation ↱ (feeds M05)</text>
+<rect x="1210.7" y="2447.0" width="549.3" height="150.0" rx="9" class="box" style="stroke:#2EC4B6"/>
+<text x="1225.7" y="2469.0" class="box-title" text-anchor="start" style="fill:#2EC4B6;font-size:12.6px">Continual Retraining</text>
+<text x="1225.7" y="2489.0" class="box-detail" text-anchor="start" style="font-size:10.4px">RWM / EWC freezes weights critical</text>
+<text x="1225.7" y="2508.0" class="box-detail" text-anchor="start" style="font-size:10.4px">to historical spoof types (no forgetting)</text>
+<text x="1225.7" y="2527.0" class="box-detail" text-anchor="start" style="font-size:10.4px">+ few-shot adapters ↱ (feeds M01–02)</text>
+<path d="M589.3,2522.0 L625.3,2522.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1174.7,2522.0 L1210.7,2522.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1174.7,2522.0 L1786.0,2522.0 L1786.0,2033.0 L1520.0,2033.0" class="feedback-arrow" marker-end="url(#arrowFB)"/>
+<text x="1800.0" y="2277.5" class="fb-label" transform="rotate(-90 1800.0 2277.5)" text-anchor="middle">ZERO-DAY VECTOR FEED → MODULE 05</text>
+<path d="M1760.0,2522.0 L1812.0,2522.0 L1812.0,987.0 L1760.0,987.0" class="feedback-arrow" marker-end="url(#arrowFB)"/>
+<text x="1826.0" y="1754.5" class="fb-label" transform="rotate(-90 1826.0 1754.5)" text-anchor="middle">BACKBONE ADAPTER FEED (RWM / EWC) → MODULES 01–02</text>
+<rect x="20.0" y="2661.0" width="1760.0" height="195.0" rx="16" class="module-panel" />
+<text x="100.0" y="2691.0" class="eyebrow" text-anchor="start">LEGEND &amp; NOTATION</text>
+<rect x="70.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#3DA9FC"/>
+<text x="94.0" y="2722.0" class="legend-text" text-anchor="start">Linear / STFT stream</text>
+<rect x="350.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#F2C14E"/>
+<text x="374.0" y="2722.0" class="legend-text" text-anchor="start">Log-Mel stream · Yellow zone</text>
+<rect x="630.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#C77DFF"/>
+<text x="654.0" y="2722.0" class="legend-text" text-anchor="start">SincNet stream</text>
+<rect x="910.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#E8ECF4"/>
+<text x="934.0" y="2722.0" class="legend-text" text-anchor="start">Fused / shared tensor</text>
+<rect x="1190.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#2EC4B6"/>
+<text x="1214.0" y="2722.0" class="legend-text" text-anchor="start">Verified · zero-day feed</text>
+<rect x="1470.0" y="2709.0" width="16.0" height="16.0" rx="3" class="" style="fill:#FF5470"/>
+<text x="1494.0" y="2722.0" class="legend-text" text-anchor="start">Alert · Red zone</text>
+<path d="M70,2766.0 L130,2766.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<text x="140.0" y="2770.0" class="legend-text" text-anchor="start">per-window inference path (every 2.0 s)</text>
+<path d="M620,2766.0 L680,2766.0" class="feedback-arrow" marker-end="url(#arrowFB)"/>
+<text x="690.0" y="2770.0" class="legend-text" text-anchor="start">continual-learning feedback (async, offline)</text>
+<path d="M1230,2766.0 L1290,2766.0" class="alert-arrow" marker-end="url(#arrowAlert)"/>
+<text x="1300.0" y="2770.0" class="legend-text" text-anchor="start">instant-override alert bypass</text>
+<text x="70.0" y="2806.0" class="legend-note" text-anchor="start">B = batch size · T = 1000 frames (10 ms / frame) · d_model = 256 · z = pooled global embedding</text>
+<text x="70.0" y="2829.0" class="legend-note" text-anchor="start">S_t = smoothed real-time risk score · P_k = per-window spoof probability · d_kNN = FAISS cosine distance</text>
+</svg>
+</div>
+</body>
+</html>

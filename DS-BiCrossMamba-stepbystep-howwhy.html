@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>DS-BiCrossMamba — Step-by-Step Build & Rationale Guide</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; background:#0A0E17; }
+  body { display:flex; justify-content:center; padding:24px 12px 60px; }
+  .wrap { max-width:1900px; width:100%; }
+  svg { width:100%; height:auto; display:block; }
+  text { font-family:'IBM Plex Mono', monospace; }
+
+  .diagram-title { font-family:'IBM Plex Sans',sans-serif; font-weight:700; font-size:32px; fill:#E8ECF4; }
+  .diagram-subtitle { font-family:'IBM Plex Mono',monospace; font-size:13px; fill:#9AA5B8; }
+
+  .phase-banner { fill:#0E131F; stroke:#232B3D; stroke-width:1.5; }
+  .phase-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:2.5px; fill:#5B6478; }
+  .phase-title { font-family:'IBM Plex Sans',sans-serif; font-weight:700; font-size:21px; fill:#E8ECF4; }
+  .phase-goal { font-family:'IBM Plex Mono',monospace; font-style:italic; font-size:12px; fill:#9AA5B8; }
+
+  .step-card { fill:#0E131F; stroke:#2A3348; stroke-width:1.6; }
+  .step-num-circle { fill:#161F30; stroke:#9AA5B8; stroke-width:1.4; }
+  .step-num-text { font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:600; fill:#E8ECF4; }
+  .step-title { font-family:'IBM Plex Sans',sans-serif; font-weight:700; font-size:15.5px; fill:#E8ECF4; }
+  .col-divider { stroke:#2A3348; stroke-width:1; }
+
+  .block-label { font-family:'IBM Plex Mono',monospace; font-weight:700; letter-spacing:2px; }
+  .bullet-text { font-family:'IBM Plex Mono',monospace; fill:#9AA5B8; }
+
+  .lane-tag { opacity:0.92; }
+  .lane-tag-text { font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:11.5px; fill:#0A0E17; }
+  .box { fill:#121826; stroke:#2A3348; stroke-width:1.4; }
+
+  .flow-arrow { stroke:#9AA5B8; stroke-width:2; fill:none; }
+
+  .module-panel { fill:#0E131F; stroke:#232B3D; stroke-width:1.5; }
+  .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:2.5px; fill:#5B6478; }
+  .legend-text { font-family:'IBM Plex Mono',monospace; font-size:12px; fill:#E8ECF4; }
+  .legend-note { font-family:'IBM Plex Mono',monospace; font-size:11px; fill:#9AA5B8; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<svg viewBox="0 0 1900 4682" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <marker id="arrowFlow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#9AA5B8"/>
+  </marker>
+</defs>
+
+<g><rect x="40.0" y="26.3" width="13.4" height="19.7" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="61.9" y="24.0" width="13.4" height="22.0" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="83.9" y="21.8" width="13.4" height="24.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="105.8" y="19.6" width="13.4" height="26.4" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="127.7" y="17.7" width="13.4" height="28.3" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="149.6" y="16.0" width="13.4" height="30.0" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="171.6" y="14.6" width="13.4" height="31.4" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="193.5" y="13.6" width="13.4" height="32.4" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="215.4" y="12.9" width="13.4" height="33.1" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="237.3" y="12.6" width="13.4" height="33.4" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="259.3" y="12.7" width="13.4" height="33.3" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="281.2" y="13.2" width="13.4" height="32.8" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="303.1" y="14.1" width="13.4" height="31.9" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="325.1" y="15.4" width="13.4" height="30.6" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="347.0" y="16.9" width="13.4" height="29.1" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="368.9" y="18.7" width="13.4" height="27.3" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="390.8" y="20.7" width="13.4" height="25.3" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="412.8" y="22.8" width="13.4" height="23.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="434.7" y="25.0" width="13.4" height="21.0" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="456.6" y="27.2" width="13.4" height="18.8" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="478.6" y="29.4" width="13.4" height="16.6" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="500.5" y="31.4" width="13.4" height="14.6" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="522.4" y="33.3" width="13.4" height="12.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="544.3" y="35.0" width="13.4" height="11.0" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="566.3" y="36.4" width="13.4" height="9.6" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="588.2" y="37.6" width="13.4" height="8.4" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="610.1" y="38.6" width="13.4" height="7.4" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="632.0" y="39.3" width="13.4" height="6.7" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="654.0" y="39.7" width="13.4" height="6.3" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="675.9" y="40.0" width="13.4" height="6.0" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="697.8" y="40.0" width="13.4" height="6.0" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="719.8" y="39.9" width="13.4" height="6.1" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="741.7" y="39.6" width="13.4" height="6.4" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="763.6" y="39.2" width="13.4" height="6.8" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="785.5" y="38.5" width="13.4" height="7.5" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="807.5" y="37.7" width="13.4" height="8.3" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="829.4" y="36.6" width="13.4" height="9.4" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="851.3" y="35.3" width="13.4" height="10.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="873.3" y="33.8" width="13.4" height="12.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="895.2" y="32.1" width="13.4" height="13.9" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="917.1" y="30.2" width="13.4" height="15.8" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="939.0" y="28.3" width="13.4" height="17.7" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="961.0" y="26.3" width="13.4" height="19.7" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="982.9" y="24.3" width="13.4" height="21.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1004.8" y="22.3" width="13.4" height="23.7" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1026.7" y="20.5" width="13.4" height="25.5" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1048.7" y="18.8" width="13.4" height="27.2" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1070.6" y="17.4" width="13.4" height="28.6" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1092.5" y="16.2" width="13.4" height="29.8" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1114.5" y="15.3" width="13.4" height="30.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1136.4" y="14.8" width="13.4" height="31.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1158.3" y="14.7" width="13.4" height="31.3" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1180.2" y="14.9" width="13.4" height="31.1" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1202.2" y="15.5" width="13.4" height="30.5" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1224.1" y="16.5" width="13.4" height="29.5" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1246.0" y="17.8" width="13.4" height="28.2" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1268.0" y="19.4" width="13.4" height="26.6" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1289.9" y="21.3" width="13.4" height="24.7" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1311.8" y="23.3" width="13.4" height="22.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1333.7" y="25.4" width="13.4" height="20.6" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1355.7" y="27.6" width="13.4" height="18.4" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1377.6" y="29.8" width="13.4" height="16.2" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1399.5" y="31.9" width="13.4" height="14.1" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1421.4" y="33.9" width="13.4" height="12.1" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1443.4" y="35.6" width="13.4" height="10.4" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1465.3" y="37.1" width="13.4" height="8.9" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1487.2" y="38.3" width="13.4" height="7.7" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1509.2" y="39.2" width="13.4" height="6.8" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1531.1" y="39.8" width="13.4" height="6.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1553.0" y="40.0" width="13.4" height="6.0" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1574.9" y="39.9" width="13.4" height="6.1" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1596.9" y="39.5" width="13.4" height="6.5" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1618.8" y="38.8" width="13.4" height="7.2" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1640.7" y="37.8" width="13.4" height="8.2" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1662.7" y="36.7" width="13.4" height="9.3" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1684.6" y="35.5" width="13.4" height="10.5" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1706.5" y="34.1" width="13.4" height="11.9" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1728.4" y="32.8" width="13.4" height="13.2" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1750.4" y="31.5" width="13.4" height="14.5" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1772.3" y="30.3" width="13.4" height="15.7" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1794.2" y="29.3" width="13.4" height="16.7" fill="#C77DFF" opacity="0.28" rx="1.5"/>
+<rect x="1816.1" y="28.4" width="13.4" height="17.6" fill="#3DA9FC" opacity="0.28" rx="1.5"/>
+<rect x="1838.1" y="27.8" width="13.4" height="18.2" fill="#F2C14E" opacity="0.28" rx="1.5"/>
+<rect x="1860.0" y="27.3" width="13.4" height="18.7" fill="#C77DFF" opacity="0.28" rx="1.5"/></g>
+<text x="950.0" y="90.0" class="diagram-title" text-anchor="middle" >DS-BiCrossMamba — Step-by-Step Build &amp; Rationale Guide</text>
+<text x="950.0" y="118.0" class="diagram-subtitle" text-anchor="middle" >Every stage of the pipeline: exactly how to implement it, and why it's designed that way</text>
+<rect x="40.0" y="150.0" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#3DA9FC"/>
+<rect x="40.0" y="150.0" width="8.0" height="76.0" rx="4" class="" style="fill:#3DA9FC"/>
+<text x="74.0" y="170.0" class="phase-eyebrow" text-anchor="start" >PHASE 1</text>
+<text x="74.0" y="198.0" class="phase-title" text-anchor="start" >Signal Ingestion &amp; Front-End Extraction</text>
+<text x="74.0" y="218.0" class="phase-goal" text-anchor="start" >GOAL: turn raw audio into three complementary 256-dim feature streams</text>
+<rect x="40.0" y="252.0" width="1820.0" height="146.5" rx="12" class="step-card" style="stroke:#3DA9FC"/>
+<circle cx="70.0" cy="274.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="279.0" class="step-num-text" text-anchor="middle" >1</text>
+<text x="98.0" y="279.0" class="step-title" text-anchor="start" >Ingest audio into a circular ring buffer</text>
+<line x1="950.0" y1="296.0" x2="950.0" y2="384.5" class="col-divider"/>
+<text x="66.0" y="302.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="321.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Allocate a (1, 160,000) tensor in GPU pinned memory as a fixed ring buffer.</text>
+<text x="66.0" y="340.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Every 2.0 s, shift the buffer left by 32,000 samples and append the newest audio.</text>
+<text x="66.0" y="360.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– This keeps a continuous 10.0 s window with 80% overlap between consecutive windows.</text>
+<text x="972.0" y="302.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="321.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Pinned memory plus in-place shifting avoids repeated CPU↔GPU transfer stalls, which is what keeps ingestion under the ~5 ms</text>
+<text x="982.0" y="337.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">latency budget.</text>
+<text x="972.0" y="357.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– An 80% overlap means a short spoofed segment is very unlikely to ever fall entirely inside a gap between two windows.</text>
+<path d="M950.0,398.5 L950.0,414.5 L332.7,414.5 L332.7,420.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,398.5 L950.0,414.5 L950.0,414.5 L950.0,420.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,398.5 L950.0,414.5 L1567.3,414.5 L1567.3,420.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<circle cx="56.0" cy="439.5" r="15" class="step-num-circle"/>
+<text x="56.0" y="444.5" class="step-num-text" text-anchor="middle" >2</text>
+<text x="84.0" y="444.5" class="step-title" text-anchor="start" >Extract a spectral representation per branch   (parallel across all 3 streams)</text>
+<rect x="40.0" y="454.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="454.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="471.0" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="488.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="507.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Compute an STFT: N_fft=2048, hop=160 (10 ms), Hann window=2048; take magnitude</text>
+<text x="64.0" y="524.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">|X(t,f)|.</text>
+<text x="54.0" y="550.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="569.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Hann windowing limits spectral leakage; a 10 ms hop matches the 1000-frame grid</text>
+<text x="64.0" y="586.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">every later module assumes; the raw linear spectrum keeps fine harmonic detail</text>
+<text x="64.0" y="602.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">vocoders often get subtly wrong.</text>
+<rect x="657.3" y="454.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="454.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="471.0" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="488.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="507.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Multiply |X| by a static Mel filterbank (1025→128 bins, 0–8000 Hz), then take the</text>
+<text x="681.3" y="524.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">log.</text>
+<text x="671.3" y="550.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="569.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Mel scale mirrors human pitch perception — the same domain most TTS/vocoder losses</text>
+<text x="681.3" y="586.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">are optimized against — so Mel-domain artifacts are often the most perceptually</text>
+<text x="681.3" y="602.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">telling spoof cue.</text>
+<rect x="1274.7" y="454.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="454.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="471.0" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="488.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="507.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Run 70 learnable sinc bandpass filters directly on raw PCM; filter cutoffs [f1,f2]</text>
+<text x="1298.7" y="524.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">are learned.</text>
+<text x="1288.7" y="550.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="569.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Operating on the raw waveform (not a fixed transform) lets the filters specialize</text>
+<text x="1298.7" y="586.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">toward whichever frequency bands carry the most synthesis artifacts — something a</text>
+<text x="1298.7" y="602.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">fixed STFT/Mel basis can't adapt to.</text>
+<path d="M332.7,677.0 L332.7,699.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,677.0 L950.0,699.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1567.3,677.0 L1567.3,699.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<circle cx="56.0" cy="718.0" r="15" class="step-num-circle"/>
+<text x="56.0" y="723.0" class="step-num-text" text-anchor="middle" >3</text>
+<text x="84.0" y="723.0" class="step-title" text-anchor="start" >Project each branch to the shared 256-dim embedding   (parallel across all 3 streams)</text>
+<rect x="40.0" y="733.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="733.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="749.5" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="767.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="786.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Conv2d(1, 256, kernel=(1025,1)) → BatchNorm2d → GELU → X_lin ∈ ℝ^(B×1000×256).</text>
+<text x="54.0" y="812.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="831.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Projecting to a common d_model=256 makes all three streams directly comparable and</text>
+<text x="64.0" y="848.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">fusable downstream; BatchNorm tames the very different input scales across branches.</text>
+<rect x="657.3" y="733.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="733.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="749.5" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="767.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="786.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Conv2d(1, 256, kernel=(128,1)) → BatchNorm2d → GELU → X_mel ∈ ℝ^(B×1000×256).</text>
+<text x="671.3" y="812.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="831.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Same shared-dimension logic as Branch A; GELU's smooth gradient helps a deep</text>
+<text x="681.3" y="848.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">multi-branch network train more reliably than a hard ReLU cutoff.</text>
+<rect x="1274.7" y="733.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="733.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="749.5" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="767.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="786.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Apply a learned 2D attention mask ∈[0,1] to the sinc features, then linearly</text>
+<text x="1298.7" y="802.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">project to 256.</text>
+<text x="1288.7" y="829.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="848.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– The attention gate suppresses non-vocal pauses in the raw waveform stream, so</text>
+<text x="1298.7" y="864.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">silence doesn't dilute the sinc embedding with uninformative frames.</text>
+<path d="M332.7,939.0 L332.7,945.0 L950.0,945.0 L950.0,961.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,939.0 L950.0,945.0 L950.0,945.0 L950.0,961.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1567.3,939.0 L1567.3,945.0 L950.0,945.0 L950.0,961.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="987.0" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#9AA5B8"/>
+<rect x="40.0" y="987.0" width="8.0" height="76.0" rx="4" class="" style="fill:#9AA5B8"/>
+<text x="74.0" y="1007.0" class="phase-eyebrow" text-anchor="start" >PHASE 2</text>
+<text x="74.0" y="1035.0" class="phase-title" text-anchor="start" >Tri-Stream Sequence Modeling</text>
+<text x="74.0" y="1055.0" class="phase-goal" text-anchor="start" >GOAL: model temporal dynamics per stream with long-range memory</text>
+<rect x="40.0" y="1089.0" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#9AA5B8"/>
+<circle cx="70.0" cy="1111.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="1116.0" class="step-num-text" text-anchor="middle" >4</text>
+<text x="98.0" y="1116.0" class="step-title" text-anchor="start" >Apply noise / silence parameter gating inside each Mamba block</text>
+<line x1="950.0" y1="1133.0" x2="950.0" y2="1199.0" class="col-divider"/>
+<text x="66.0" y="1139.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="1158.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Let the SSM's input-dependent Δ_t and B_t parameters fall toward 0 whenever stationary noise or silence is detected,</text>
+<text x="76.0" y="1174.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">independently in each of the three streams.</text>
+<text x="972.0" y="1139.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="1158.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– In a selective state-space model, B_t / Δ_t control how much of the current frame gets written into memory — forcing them</text>
+<text x="982.0" y="1174.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">toward 0 during noise or silence keeps irrelevant frames from polluting the running hidden state.</text>
+<path d="M950.0,1213.0 L950.0,1229.0 L332.7,1229.0 L332.7,1235.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,1213.0 L950.0,1229.0 L950.0,1229.0 L950.0,1235.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,1213.0 L950.0,1229.0 L1567.3,1229.0 L1567.3,1235.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<circle cx="56.0" cy="1254.0" r="15" class="step-num-circle"/>
+<text x="56.0" y="1259.0" class="step-num-text" text-anchor="middle" >5</text>
+<text x="84.0" y="1259.0" class="step-title" text-anchor="start" >Forward Mamba sweep with cross-window state carryover   (parallel across all 3 streams)</text>
+<rect x="40.0" y="1269.0" width="585.3" height="180.5" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="1269.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="1285.5" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="1303.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="1322.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Scan t=1→1000; initialize h₀ with h₁₀₀₀ saved from the previous 10 s window.</text>
+<text x="54.0" y="1348.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="1367.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Carrying state across the 2 s stride gives the model effectively unbounded context</text>
+<text x="64.0" y="1384.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">over the whole call, not just the current 10 s slice — this is what lets it catch</text>
+<text x="64.0" y="1400.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">spoofing cues that only emerge over several seconds.</text>
+<rect x="657.3" y="1269.0" width="585.3" height="180.5" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="1269.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="1285.5" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="1303.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="1322.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Same forward-sweep mechanism, applied independently to the Mel stream's hidden</text>
+<text x="681.3" y="1338.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">state.</text>
+<text x="671.3" y="1365.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="1384.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Each stream keeps its own memory, so prosodic drift (Mel) and raw-waveform drift</text>
+<text x="681.3" y="1400.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">(Sinc) can each be tracked on their own timescale without interfering with one</text>
+<text x="681.3" y="1417.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">another.</text>
+<rect x="1274.7" y="1269.0" width="585.3" height="180.5" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="1269.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="1285.5" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="1303.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="1322.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Same forward-sweep mechanism, applied independently to the SincNet stream's hidden</text>
+<text x="1298.7" y="1338.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">state.</text>
+<text x="1288.7" y="1365.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="1384.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Because SincNet operates on raw PCM, its long-range memory can pick up on</text>
+<text x="1298.7" y="1400.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">waveform-level artifacts (e.g. phase or micro-timing) that never survive the STFT/Mel</text>
+<text x="1298.7" y="1417.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">transforms at all.</text>
+<circle cx="56.0" cy="1532.5" r="15" class="step-num-circle"/>
+<text x="56.0" y="1537.5" class="step-num-text" text-anchor="middle" >6</text>
+<text x="84.0" y="1537.5" class="step-title" text-anchor="start" >Backward Mamba sweep (zero-initialized)   (parallel across all 3 streams)</text>
+<rect x="40.0" y="1547.5" width="585.3" height="164.0" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="1547.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="1564.0" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="1581.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="1600.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Reverse the sequence and scan t=1000→1 with h'_init = 0 (no carryover).</text>
+<text x="54.0" y="1627.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="1646.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Zero-initializing the backward pass avoids leaking information from beyond the</text>
+<text x="64.0" y="1662.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">current window into a "future" the streaming system hasn't received yet — keeping the</text>
+<text x="64.0" y="1679.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">detector honest for real-time use.</text>
+<rect x="657.3" y="1547.5" width="585.3" height="164.0" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="1547.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="1564.0" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="1581.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="1600.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Same zero-init backward sweep, run on the Mel stream.</text>
+<text x="671.3" y="1627.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="1646.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Within the current window, the backward pass still lets every frame see later</text>
+<text x="681.3" y="1662.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">context — useful for catching artifacts that only resolve once a phoneme or word</text>
+<text x="681.3" y="1679.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">completes.</text>
+<rect x="1274.7" y="1547.5" width="585.3" height="164.0" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="1547.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="1564.0" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="1581.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="1600.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Same zero-init backward sweep, run on the SincNet stream.</text>
+<text x="1288.7" y="1627.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="1646.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Combined with the forward sweep, this gives each raw-waveform frame full</text>
+<text x="1298.7" y="1662.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">within-window context in both directions, without ever peeking past the live edge of</text>
+<text x="1298.7" y="1679.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">the stream.</text>
+<circle cx="56.0" cy="1794.5" r="15" class="step-num-circle"/>
+<text x="56.0" y="1799.5" class="step-num-text" text-anchor="middle" >7</text>
+<text x="84.0" y="1799.5" class="step-title" text-anchor="start" >Fuse forward + backward via concat, linear, and residual add   (parallel across all 3 streams)</text>
+<rect x="40.0" y="1809.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="1809.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="1826.0" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="1843.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="1862.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Concat [Y_fwd ‖ Flip(Y_bwd)] → 512-dim → Linear(512,256) → add residual to the</text>
+<text x="64.0" y="1879.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">block's input.</text>
+<text x="54.0" y="1905.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="1924.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– The residual connection means the block only has to learn a correction on top of</text>
+<text x="64.0" y="1941.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">its input, rather than reconstructing it from scratch — the standard trick that keeps</text>
+<text x="64.0" y="1957.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">deep sequence stacks trainable.</text>
+<rect x="657.3" y="1809.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="1809.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="1826.0" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="1843.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="1862.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Identical fusion applied to the Mel stream's forward/backward outputs.</text>
+<text x="671.3" y="1889.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="1908.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Consistent fusion logic across streams keeps H_lin, H_mel, H_sinc directly</text>
+<text x="681.3" y="1924.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">comparable, which the next module's cross-attention step depends on.</text>
+<rect x="1274.7" y="1809.5" width="585.3" height="180.5" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="1809.5" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="1826.0" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="1843.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="1862.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Identical fusion applied to the SincNet stream's forward/backward outputs.</text>
+<text x="1288.7" y="1889.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="1908.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Produces H_sinc ∈ ℝ^(B×1000×256) — same shape as the other two streams, ready for</text>
+<text x="1298.7" y="1924.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">cross-stream attention.</text>
+<path d="M332.7,2032.0 L332.7,2038.0 L950.0,2038.0 L950.0,2054.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,2032.0 L950.0,2038.0 L950.0,2038.0 L950.0,2054.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1567.3,2032.0 L1567.3,2038.0 L950.0,2038.0 L950.0,2054.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="2080.0" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#C77DFF"/>
+<rect x="40.0" y="2080.0" width="8.0" height="76.0" rx="4" class="" style="fill:#C77DFF"/>
+<text x="74.0" y="2100.0" class="phase-eyebrow" text-anchor="start" >PHASE 3</text>
+<text x="74.0" y="2128.0" class="phase-title" text-anchor="start" >Cross-Stream Fusion</text>
+<text x="74.0" y="2148.0" class="phase-goal" text-anchor="start" >GOAL: let the streams cross-check each other and reweight under attack conditions</text>
+<circle cx="56.0" cy="2197.0" r="15" class="step-num-circle"/>
+<text x="56.0" y="2202.0" class="step-num-text" text-anchor="middle" >8</text>
+<text x="84.0" y="2202.0" class="step-title" text-anchor="start" >Cross-attend each stream against the others   (parallel across all 3 streams)</text>
+<rect x="40.0" y="2212.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#3DA9FC"/>
+<rect x="40.0" y="2212.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#3DA9FC"/>
+<text x="332.7" y="2228.5" class="lane-tag-text" text-anchor="middle" >BRANCH A · Linear / STFT</text>
+<text x="54.0" y="2246.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="54.0" y="2265.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Linear→Mel cross-attention: Q = H_lin, K/V = H_mel.</text>
+<text x="54.0" y="2291.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="54.0" y="2310.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– A spoof rarely fools every representation equally — letting the Linear stream query</text>
+<text x="64.0" y="2327.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">the Mel stream surfaces artifacts that are subtle in one domain but obvious in the</text>
+<text x="64.0" y="2343.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">other.</text>
+<rect x="657.3" y="2212.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#F2C14E"/>
+<rect x="657.3" y="2212.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#F2C14E"/>
+<text x="950.0" y="2228.5" class="lane-tag-text" text-anchor="middle" >BRANCH B · Log-Mel</text>
+<text x="671.3" y="2246.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="671.3" y="2265.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Mel→Linear cross-attention: Q = H_mel, K/V = H_lin.</text>
+<text x="671.3" y="2291.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="671.3" y="2310.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– The symmetric direction ensures information flows both ways, so neither stream's</text>
+<text x="681.3" y="2327.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">blind spots are silently ignored.</text>
+<rect x="1274.7" y="2212.0" width="585.3" height="164.0" rx="10" class="box" style="stroke:#C77DFF"/>
+<rect x="1274.7" y="2212.0" width="585.3" height="24.0" rx="10" class="lane-tag" style="fill:#C77DFF"/>
+<text x="1567.3" y="2228.5" class="lane-tag-text" text-anchor="middle" >BRANCH C · SincNet</text>
+<text x="1288.7" y="2246.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="1288.7" y="2265.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Sinc cross-attention: Q = H_sinc, K/V = [H_lin ‖ H_mel].</text>
+<text x="1288.7" y="2291.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="1288.7" y="2310.5" class="bullet-text" text-anchor="start" style="font-size:10.6px">– Sinc attends to both spectral streams at once, so raw-waveform cues get</text>
+<text x="1298.7" y="2327.0" class="bullet-text" text-anchor="start" style="font-size:10.6px">contextualized against everything the frequency-domain branches picked up.</text>
+<path d="M332.7,2418.0 L332.7,2424.0 L950.0,2424.0 L950.0,2440.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M950.0,2418.0 L950.0,2424.0 L950.0,2424.0 L950.0,2440.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<path d="M1567.3,2418.0 L1567.3,2424.0 L950.0,2424.0 L950.0,2440.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="2444.0" width="1820.0" height="140.5" rx="12" class="step-card" style="stroke:#C77DFF"/>
+<circle cx="70.0" cy="2466.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="2471.0" class="step-num-text" text-anchor="middle" >9</text>
+<text x="98.0" y="2471.0" class="step-title" text-anchor="start" >Recalibrate fused channels with Squeeze-and-Excitation</text>
+<line x1="950.0" y1="2488.0" x2="950.0" y2="2570.5" class="col-divider"/>
+<text x="66.0" y="2494.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="2513.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Concatenate all cross-attended streams and pass them through an SE block to compute a channel gate g ∈ ℝ^256.</text>
+<text x="66.0" y="2532.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Multiply the fused features by g, then output Z ∈ ℝ^(B×1000×256).</text>
+<text x="972.0" y="2494.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="2513.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Under room-replay or lossy-codec compression, high-frequency STFT detail is often destroyed first — SE learns to</text>
+<text x="982.0" y="2529.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">automatically down-weight the now-unreliable linear channel (g_lin→0) and lean on the more robust Mel/prosodic channel</text>
+<text x="982.0" y="2546.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">(g_mel→1), instead of needing a hand-coded rule per condition.</text>
+<path d="M950.0,2584.5 L950.0,2606.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="2632.5" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#F2C14E"/>
+<rect x="40.0" y="2632.5" width="8.0" height="76.0" rx="4" class="" style="fill:#F2C14E"/>
+<text x="74.0" y="2652.5" class="phase-eyebrow" text-anchor="start" >PHASE 4</text>
+<text x="74.0" y="2680.5" class="phase-title" text-anchor="start" >Classification &amp; Real-Time Smoothing</text>
+<text x="74.0" y="2700.5" class="phase-goal" text-anchor="start" >GOAL: turn per-window features into a stable, low-latency risk score</text>
+<rect x="40.0" y="2734.5" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#F2C14E"/>
+<circle cx="70.0" cy="2756.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="2761.5" class="step-num-text" text-anchor="middle" >10</text>
+<text x="98.0" y="2761.5" class="step-title" text-anchor="start" >Pool the fused sequence into one embedding</text>
+<line x1="950.0" y1="2778.5" x2="950.0" y2="2844.5" class="col-divider"/>
+<text x="66.0" y="2784.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="2803.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Apply Attentive Statistics Pooling over the T=1000 frames of Z to produce a global embedding z ∈ ℝ^(B×256).</text>
+<text x="972.0" y="2784.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="2803.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Spoof artifacts are often localized to a few phonemes, not spread evenly across 10 s — attention-weighted pooling lets the</text>
+<text x="982.0" y="2820.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">most diagnostic frames dominate the summary instead of being averaged away by clean-sounding speech or silence.</text>
+<path d="M950.0,2858.5 L950.0,2876.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="2880.5" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#F2C14E"/>
+<circle cx="70.0" cy="2902.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="2907.5" class="step-num-text" text-anchor="middle" >11</text>
+<text x="98.0" y="2907.5" class="step-title" text-anchor="start" >Classify with the MLP head</text>
+<line x1="950.0" y1="2924.5" x2="950.0" y2="2990.5" class="col-divider"/>
+<text x="66.0" y="2930.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="2949.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Linear(256,64) → GELU → Dropout(0.3) → Linear(64,2) → Softmax, producing the per-window spoof probability P_k ∈ [0,1].</text>
+<text x="972.0" y="2930.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="2949.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Dropout(0.3) on such a small head guards against overfitting to the specific spoof generators seen during training —</text>
+<text x="982.0" y="2966.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">important for generalizing to unseen, "zero-day" synthesis methods.</text>
+<path d="M950.0,3004.5 L950.0,3022.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3026.5" width="1820.0" height="140.5" rx="12" class="step-card" style="stroke:#F2C14E"/>
+<circle cx="70.0" cy="3048.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="3053.5" class="step-num-text" text-anchor="middle" >12</text>
+<text x="98.0" y="3053.5" class="step-title" text-anchor="start" >Apply Gaussian window weighting</text>
+<line x1="950.0" y1="3070.5" x2="950.0" y2="3153.0" class="col-divider"/>
+<text x="66.0" y="3076.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="3095.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Weight frames by w(t) = exp(−(t−5)²/2σ²), σ=2.0, across the 10 s chunk before/alongside pooling emphasis.</text>
+<text x="972.0" y="3076.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="3095.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– The first and last ~2 s of a rolling window are the least reliable, since they're reconstructed from partial context —</text>
+<text x="982.0" y="3112.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">down-weighting those edges and trusting the center reduces false alarms caused by boundary artifacts rather than real</text>
+<text x="982.0" y="3128.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">spoofing.</text>
+<path d="M950.0,3167.0 L950.0,3185.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3189.0" width="1820.0" height="160.0" rx="12" class="step-card" style="stroke:#F2C14E"/>
+<circle cx="70.0" cy="3211.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="3216.0" class="step-num-text" text-anchor="middle" >13</text>
+<text x="98.0" y="3216.0" class="step-title" text-anchor="start" >Smooth into a real-time risk score via asymmetric EMA</text>
+<line x1="950.0" y1="3233.0" x2="950.0" y2="3335.0" class="col-divider"/>
+<text x="66.0" y="3239.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="3258.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Update S_t with α=0.75 (fast attack) whenever P_k rises above S_t−1, and α=0.15 (slow decay) whenever it falls.</text>
+<text x="66.0" y="3277.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– If P_k &gt; 0.88, bypass the EMA entirely and fire an immediate high-confidence alert.</text>
+<text x="972.0" y="3239.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="3258.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Fast attack means a spoof burst gets flagged almost immediately; slow decay means a brief pause in speech can't quietly</text>
+<text x="982.0" y="3274.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">reset an active alert.</text>
+<text x="972.0" y="3294.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– The instant-override path guarantees a high-confidence detection is never delayed by the smoothing filter, keeping</text>
+<text x="982.0" y="3310.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">worst-case alert latency under 200 ms.</text>
+<path d="M950.0,3349.0 L950.0,3371.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3397.0" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#2EC4B6"/>
+<rect x="40.0" y="3397.0" width="8.0" height="76.0" rx="4" class="" style="fill:#2EC4B6"/>
+<text x="74.0" y="3417.0" class="phase-eyebrow" text-anchor="start" >PHASE 5</text>
+<text x="74.0" y="3445.0" class="phase-title" text-anchor="start" >Zero-Day Retrieval &amp; Decisioning</text>
+<text x="74.0" y="3465.0" class="phase-goal" text-anchor="start" >GOAL: catch novel spoofs and route the right response</text>
+<rect x="40.0" y="3499.0" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#2EC4B6"/>
+<circle cx="70.0" cy="3521.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="3526.0" class="step-num-text" text-anchor="middle" >14</text>
+<text x="98.0" y="3526.0" class="step-title" text-anchor="start" >Retrieve nearest zero-day spoof neighbors via FAISS</text>
+<line x1="950.0" y1="3543.0" x2="950.0" y2="3609.0" class="col-divider"/>
+<text x="66.0" y="3549.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="3568.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Query the global embedding z against an in-memory FAISS index of verified bona fide and harvested spoof embeddings; compute</text>
+<text x="76.0" y="3584.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">cosine distance d_kNN to the nearest spoof cluster.</text>
+<text x="972.0" y="3549.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="3568.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– The classifier only knows spoof types it was trained on — nearest-neighbor retrieval against a continuously updated index</text>
+<text x="982.0" y="3584.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">gives a second, non-parametric signal that can catch synthesis methods the classifier itself would miss entirely.</text>
+<path d="M950.0,3623.0 L950.0,3641.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3645.0" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#2EC4B6"/>
+<circle cx="70.0" cy="3667.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="3672.0" class="step-num-text" text-anchor="middle" >15</text>
+<text x="98.0" y="3672.0" class="step-title" text-anchor="start" >Fuse the score with retrieval distance and telephony metadata</text>
+<line x1="950.0" y1="3689.0" x2="950.0" y2="3755.0" class="col-divider"/>
+<text x="66.0" y="3695.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="3714.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Combine S_t and d_kNN with telephony metadata: ANI spoof check, carrier/cellular vs SIP-trunk routing, SIM-swap-under-72h</text>
+<text x="76.0" y="3730.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">status, and IVR bot traversal velocity.</text>
+<text x="972.0" y="3695.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="3714.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Audio-only detection has an irreducible false-positive rate — cross-checking against fraud signals independent of the audio</text>
+<text x="982.0" y="3730.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">lets the system stay quiet on borderline audio scores when the call's provenance looks clean.</text>
+<path d="M950.0,3769.0 L950.0,3787.0" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3791.0" width="1820.0" height="146.5" rx="12" class="step-card" style="stroke:#2EC4B6"/>
+<circle cx="70.0" cy="3813.0" r="15" class="step-num-circle"/>
+<text x="70.0" y="3818.0" class="step-num-text" text-anchor="middle" >16</text>
+<text x="98.0" y="3818.0" class="step-title" text-anchor="start" >Route the call to a Green / Yellow / Red decision tier</text>
+<line x1="950.0" y1="3835.0" x2="950.0" y2="3923.5" class="col-divider"/>
+<text x="66.0" y="3841.0" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="3860.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Green (S_t &lt; 0.30): silent pass, agent UI shows a "Verified" badge.</text>
+<text x="66.0" y="3879.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Yellow (0.30–0.80): suppress silently if telemetry is verified, else trigger an automated push/FaceID step-up.</text>
+<text x="66.0" y="3899.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Red (S_t &gt; 0.80, or instant override): lock sensitive actions and route to Level-2 Fraud Ops with a forensic summary.</text>
+<text x="972.0" y="3841.0" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="3860.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">– A single global threshold either over-alerts (alert fatigue) or under-alerts (missed fraud) — three tiers let the system</text>
+<text x="982.0" y="3876.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">stay silent when confident, ask for lightweight extra proof when unsure, and act decisively only when justified.</text>
+<path d="M950.0,3937.5 L950.0,3959.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="3985.5" width="1820.0" height="76.0" rx="12" class="phase-banner" style="border-color:#FF5470"/>
+<rect x="40.0" y="3985.5" width="8.0" height="76.0" rx="4" class="" style="fill:#FF5470"/>
+<text x="74.0" y="4005.5" class="phase-eyebrow" text-anchor="start" >PHASE 6</text>
+<text x="74.0" y="4033.5" class="phase-title" text-anchor="start" >Continual Learning Loop</text>
+<text x="74.0" y="4053.5" class="phase-goal" text-anchor="start" >GOAL: keep the system current on new threats without forgetting old ones</text>
+<rect x="40.0" y="4087.5" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#FF5470"/>
+<circle cx="70.0" cy="4109.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="4114.5" class="step-num-text" text-anchor="middle" >17</text>
+<text x="98.0" y="4114.5" class="step-title" text-anchor="start" >Harvest high-entropy and failed-challenge samples</text>
+<line x1="950.0" y1="4131.5" x2="950.0" y2="4197.5" class="col-divider"/>
+<text x="66.0" y="4137.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="4156.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Route production samples with borderline confidence (0.40 ≤ P_k ≤ 0.60), plus any that failed a customer step-up challenge,</text>
+<text x="76.0" y="4173.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">to an S3 object-store queue.</text>
+<text x="972.0" y="4137.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="4156.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Borderline-confidence cases are exactly where the model is least sure, and failed challenges are cases where operational</text>
+<text x="982.0" y="4173.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">reality disagreed with the model — both are far more valuable for improving the system than easy, confident cases.</text>
+<path d="M950.0,4211.5 L950.0,4229.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="4233.5" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#FF5470"/>
+<circle cx="70.0" cy="4255.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="4260.5" class="step-num-text" text-anchor="middle" >18</text>
+<text x="98.0" y="4260.5" class="step-title" text-anchor="start" >Ingest newly discovered zero-day vectors  ↻ loops back into Step 14</text>
+<line x1="950.0" y1="4277.5" x2="950.0" y2="4343.5" class="col-divider"/>
+<text x="66.0" y="4283.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="4302.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Immediately index newly confirmed spoof embeddings into the active FAISS store.</text>
+<text x="972.0" y="4283.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="4302.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Updating the kNN index is near-instant, unlike retraining a neural network — a newly discovered spoofing technique can be</text>
+<text x="982.0" y="4319.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">caught for every subsequent call within minutes rather than the weeks a full retrain cycle would take.</text>
+<path d="M950.0,4357.5 L950.0,4375.5" class="flow-arrow" marker-end="url(#arrowFlow)"/>
+<rect x="40.0" y="4379.5" width="1820.0" height="124.0" rx="12" class="step-card" style="stroke:#FF5470"/>
+<circle cx="70.0" cy="4401.5" r="15" class="step-num-circle"/>
+<text x="70.0" y="4406.5" class="step-num-text" text-anchor="middle" >19</text>
+<text x="98.0" y="4406.5" class="step-title" text-anchor="start" >Continually retrain the backbone  ↻ loops back into Steps 2–3, 5–7</text>
+<line x1="950.0" y1="4423.5" x2="950.0" y2="4489.5" class="col-divider"/>
+<text x="66.0" y="4429.5" class="block-label" text-anchor="start" style="fill:#3DA9FC;font-size:11.5px">HOW</text>
+<text x="66.0" y="4448.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Apply Radian Weight Modification (RWM) or Elastic Weight Consolidation (EWC) to freeze weights critical to historical spoof</text>
+<text x="76.0" y="4465.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">types, then fine-tune lightweight few-shot adapters on newly harvested synthetic speech.</text>
+<text x="972.0" y="4429.5" class="block-label" text-anchor="start" style="fill:#F2C14E;font-size:11.5px">WHY</text>
+<text x="972.0" y="4448.5" class="bullet-text" text-anchor="start" style="font-size:11.3px">– Naively fine-tuning on new spoof types causes catastrophic forgetting of older ones — regularized continual learning lets</text>
+<text x="982.0" y="4465.0" class="bullet-text" text-anchor="start" style="font-size:11.3px">the system absorb new threats without silently losing coverage of threats it already handled well.</text>
+<rect x="40.0" y="4533.5" width="1820.0" height="108.0" rx="14" class="module-panel" />
+<text x="70.0" y="4563.5" class="eyebrow" text-anchor="start" >LEGEND</text>
+<rect x="70.0" y="4579.5" width="14.0" height="14.0" rx="3" class="" style="fill:#3DA9FC"/>
+<text x="92.0" y="4590.5" class="legend-text" text-anchor="start" >HOW — concrete implementation detail from the spec</text>
+<rect x="70.0" y="4603.5" width="14.0" height="14.0" rx="3" class="" style="fill:#F2C14E"/>
+<text x="92.0" y="4614.5" class="legend-text" text-anchor="start" >WHY — the engineering rationale behind that design choice</text>
+<text x="680.0" y="4590.5" class="legend-note" text-anchor="start" >Card border color ties each step back to its Phase; branch tags (blue / amber / violet) mark</text>
+<text x="680.0" y="4610.5" class="legend-note" text-anchor="start" >Linear-STFT / Log-Mel / SincNet streams consistently across every parallel step.</text>
+</svg>
+</div>
+</body>
+</html>
