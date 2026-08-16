@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS-BiCrossMamba — Executive Architecture Walkthrough</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-main: #06090F;
+    --bg-card: #0C121E;
+    --bg-box: #121A2B;
+    --bg-subbox: #18233A;
+    --border-card: #1E2B45;
+    --border-box: #273757;
+    
+    --text-title: #FFFFFF;
+    --text-body: #C4D1EB;
+    --text-muted: #7E90B0;
+
+    --c-blue: #3DA9FC;
+    --c-amber: #F2C14E;
+    --c-purple: #C77DFF;
+    --c-teal: #2EC4B6;
+    --c-coral: #FF5470;
+    --c-green: #38B000;
+
+    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-body);
+    font-family: var(--font-sans);
+    padding: 30px 15px 80px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .deck-container {
+    max-width: 1350px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Presentation Header */
+  header {
+    text-align: center;
+    margin-bottom: 35px;
+    width: 100%;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(61, 169, 252, 0.12);
+    color: var(--c-blue);
+    border: 1px solid rgba(61, 169, 252, 0.35);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-title);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .deck-subtitle {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Flow Connectors */
+  .flow-v-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8px 0;
+    color: var(--c-blue);
+  }
+  .arrow-line {
+    width: 2px;
+    height: 22px;
+    background: var(--border-box);
+  }
+  .arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--border-box);
+  }
+
+  /* Universal Step Node */
+  .step-node {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+  }
+
+  .node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 10px;
+  }
+  .node-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .node-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-box);
+    border: 1.5px solid var(--text-muted);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .node-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-title);
+  }
+  .tensor-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--c-blue);
+    border: 1px solid rgba(61, 169, 252, 0.25);
+  }
+
+  .speaker-notes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .note-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .note-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--c-amber);
+  }
+  .note-text {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .note-text strong {
+    color: var(--text-title);
+  }
+
+  /* Bifurcation & Parallel Lanes */
+  .split-junction {
+    width: 100%;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .split-bar {
+    width: 68%;
+    height: 2px;
+    background: var(--border-box);
+    position: relative;
+  }
+  .split-bar::before, .split-bar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 16px;
+    background: var(--border-box);
+  }
+  .split-bar::before { left: 0; }
+  .split-bar::after { right: 0; }
+  
+  .branch-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .branch-column {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .b-blue { border: 1px solid var(--c-blue); border-top: 4px solid var(--c-blue); }
+  .b-amber { border: 1px solid var(--c-amber); border-top: 4px solid var(--c-amber); }
+  .b-purple { border: 1px solid var(--c-purple); border-top: 4px solid var(--c-purple); }
+
+  .branch-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+
+  .sub-card {
+    background: var(--bg-box);
+    border: 1px solid var(--border-box);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .sub-title {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-title);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .sub-desc {
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--text-body);
+  }
+
+  /* Merge Junction */
+  .merge-junction {
+    width: 100%;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .merge-bar {
+    width: 68%;
+    height: 2px;
+    background: var(--border-box);
+    position: relative;
+  }
+  .merge-bar::before, .merge-bar::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    height: 16px;
+    background: var(--border-box);
+  }
+  .merge-bar::before { left: 0; }
+  .merge-bar::after { right: 0; }
+
+  /* Triaging Grid */
+  .triaging-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .t-box {
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--bg-box);
+    border: 1px solid var(--border-box);
+  }
+  .t-green { border-left: 3px solid var(--c-green); }
+  .t-yellow { border-left: 3px solid var(--c-amber); }
+  .t-red { border-left: 3px solid var(--c-coral); }
+  .t-header {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .t-desc { font-size: 11.5px; color: var(--text-body); line-height: 1.4; }
+
+  @media (max-width: 950px) {
+    .branch-grid, .triaging-grid, .speaker-notes { grid-template-columns: 1fr; }
+    .split-bar, .merge-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck-container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="badge">Presentation Architecture Map</div>
+    <h1>DS-BiCrossMamba: End-to-End System Flow</h1>
+    <p class="deck-subtitle">Sequential Walkthrough: Ingestion → Tri-Branch Bifurcation → BiMamba Modeling → Fusion → Triaging</p>
+  </header>
+
+  <!-- STEP 1: INGESTION -->
+  <div class="step-node" style="border-left: 4px solid var(--c-blue);">
+    <div class="node-header">
+      <div class="node-title-group">
+        <div class="node-num">1</div>
+        <div class="node-title">Raw Audio Ingestion &amp; GPU Circular Buffer</div>
+      </div>
+      <div class="tensor-badge">[B=1, Channels=1, Samples=160,000]</div>
+    </div>
+    <div class="speaker-notes">
+      <div class="note-block">
+        <span class="note-label">Architecture Action</span>
+        <p class="note-text">Ingests 16 kHz live audio into a rolling <strong>10.0-second FIFO buffer</strong> advancing at a <strong>2.0-second stride</strong> (80% overlap) in GPU pinned memory.</p>
+      </div>
+      <div class="note-block">
+        <span class="note-label">Key Talking Point</span>
+        <p class="note-text">Zero-copy DMA transfer keeps ingestion latency <strong>&lt; 5 ms</strong>. The 80% overlap guarantees short 1-second synthetic splices never fall between evaluation cuts.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPLIT ARROW -->
+  <div class="split-junction">
+    <div class="arrow-line" style="height:14px;"></div>
+    <div class="split-bar"></div>
+    <div class="arrow-head" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- STAGE 2: 3-BRANCH PARALLEL FLOWS -->
+  <div class="branch-grid">
+    
+    <!-- BRANCH A -->
+    <div class="branch-column b-blue">
+      <div class="branch-tag" style="color:var(--c-blue);">BRANCH A · Physical Stream</div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>Linear STFT</span> <span>[1025 × 1000]</span></div>
+        <p class="sub-desc">GPU STFT (N_fft=2048, H=160). Extracts magnitude spectrum up to 8 kHz Nyquist limit.</p>
+      </div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>1x1 Projection</span> <span>[1000 × 256]</span></div>
+        <p class="sub-desc">Conv2d(1025→256) + BatchNorm + GELU. Standardizes channel depth to d_model=256.</p>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-title"><span>BiMamba Sweep</span> <span>O(N) Scans</span></div>
+        <p class="sub-desc">Forward pass (with state carryover) + Backward pass (zero-init). Input-dependent noise gating (B_t→0).</p>
+      </div>
+
+      <div class="note-block" style="margin-top:auto; padding-top:8px;">
+        <span class="note-label" style="color:var(--c-blue);">Target Artifacts</span>
+        <p class="note-text" style="font-size:11.5px;">Vocoder grid lines, high-frequency phase seams, and uncompressed artifacts above 4000 Hz.</p>
+      </div>
+    </div>
+
+    <!-- BRANCH B -->
+    <div class="branch-column b-amber">
+      <div class="branch-tag" style="color:var(--c-amber);">BRANCH B · Perceptual Stream</div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>Log-Mel Filterbank</span> <span>[128 × 1000]</span></div>
+        <p class="sub-desc">Multiplies magnitude by 128 Mel filters + log compression to mimic the human cochlea.</p>
+      </div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>1x1 Projection</span> <span>[1000 × 256]</span></div>
+        <p class="sub-desc">Conv2d(128→256) + BatchNorm + GELU. Unifies perceptual features to d_model=256.</p>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-title"><span>BiMamba Sweep</span> <span>O(N) Scans</span></div>
+        <p class="sub-desc">Forward pass (tracks prosodic drift) + Backward pass (local context). Isolates speech channels.</p>
+      </div>
+
+      <div class="note-block" style="margin-top:auto; padding-top:8px;">
+        <span class="note-label" style="color:var(--c-amber);">Target Artifacts</span>
+        <p class="note-text" style="font-size:11.5px;">Vocal tract formants, prosodic rhythm errors, unnatural pauses, and pitch transitions in 0–4000 Hz range.</p>
+      </div>
+    </div>
+
+    <!-- BRANCH C -->
+    <div class="branch-column b-purple">
+      <div class="branch-tag" style="color:var(--c-purple);">BRANCH C · Sub-Band Stream</div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>Learnable SincNet</span> <span>[70 × 1000]</span></div>
+        <p class="sub-desc">70 parametric bandpass filters operating on raw PCM to isolate dynamic sub-bands.</p>
+      </div>
+      
+      <div class="sub-card">
+        <div class="sub-title"><span>2D-AttM Masking</span> <span>[1000 × 256]</span></div>
+        <p class="sub-desc">Spatial attention gate suppresses non-vocal pauses; projects 70 sinc bands to d_model=256.</p>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-title"><span>BiMamba Sweep</span> <span>O(N) Scans</span></div>
+        <p class="sub-desc">Bidirectional waveform modeling with linear complexity, avoiding quadratic Transformer overhead.</p>
+      </div>
+
+      <div class="note-block" style="margin-top:auto; padding-top:8px;">
+        <span class="note-label" style="color:var(--c-purple);">Target Artifacts</span>
+        <p class="note-text" style="font-size:11.5px;">Time-domain phase jumps, wave oscillation glitches, and frame-boundary errors lost during STFT conversion.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MERGE ARROW -->
+  <div class="merge-junction">
+    <div class="merge-bar"></div>
+    <div class="arrow-line" style="height:14px;"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- STEP 3: FUSION & RECALIBRATION -->
+  <div class="step-node" style="border-left: 4px solid var(--c-teal);">
+    <div class="node-header">
+      <div class="node-title-group">
+        <div class="node-num">3</div>
+        <div class="node-title">Mutual Cross-Attention (MCA) &amp; Squeeze-and-Excitation Gating</div>
+      </div>
+      <div class="tensor-badge">Fused Latent Tensor Z ∈ [B, 1000, 256]</div>
+    </div>
+    <div class="speaker-notes">
+      <div class="note-block">
+        <span class="note-label">MCA Negotiation Logic</span>
+        <p class="note-text">Symmetric cross-queries: Linear stream verifies if high-frequency spikes match vocal tract formants (<strong>Q_lin ↔ K_mel/V_mel</strong>); Mel stream checks if prosodic flaws align with physical vocoder seams.</p>
+      </div>
+      <div class="note-block">
+        <span class="note-label">The SE Fail-Safe Mechanism</span>
+        <p class="note-text">Under room replay or VoIP codec loss, high frequencies die first. The SE gate <strong>automatically down-weights linear channels (g_lin→0)</strong> and shifts reliance to resilient Mel prosodic channels (g_mel→1).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWN ARROW -->
+  <div class="flow-v-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- STEP 4: TEMPORAL POOLING & SMOOTHING -->
+  <div class="step-node" style="border-left: 4px solid var(--c-amber);">
+    <div class="node-header">
+      <div class="node-title-group">
+        <div class="node-num">4</div>
+        <div class="node-title">Attentive Pooling, MLP Classifier &amp; Real-Time EMA Smoothing</div>
+      </div>
+      <div class="tensor-badge">Z [1000, 256] → Global Vector z [256] → Real-Time Score S_t ∈ [0, 1]</div>
+    </div>
+    <div class="speaker-notes">
+      <div class="note-block">
+        <span class="note-label">Attentive Pooling &amp; Classifier</span>
+        <p class="note-text">Attention weights allow brief 200ms synthetic word splices to dominate global vector <strong>z</strong>. Regularized 2-layer MLP head outputs window spoof probability <strong>P_k</strong>.</p>
+      </div>
+      <div class="note-block">
+        <span class="note-label">Gaussian &amp; Asymmetric EMA Filter</span>
+        <p class="note-text">Gaussian bell curve suppresses window truncation edges. Asymmetric EMA reacts in <strong>&lt; 200ms on attack (α=0.75)</strong> and decays slowly (α=0.15), preventing pauses from clearing active alerts.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWN ARROW -->
+  <div class="flow-v-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- STEP 5: MULTI-FACTOR TRIAGING & LIFECYCLE -->
+  <div class="step-node" style="border-left: 4px solid var(--c-coral);">
+    <div class="node-header">
+      <div class="node-title-group">
+        <div class="node-num">5</div>
+        <div class="node-title">Zero-Day k-NN Retrieval, Telemetry Fusion &amp; Triaging Matrix</div>
+      </div>
+      <div class="tensor-badge">Score S_t + Vector Distance d_kNN + Session Telemetry</div>
+    </div>
+    
+    <div class="speaker-notes" style="margin-bottom:12px;">
+      <div class="note-block">
+        <span class="note-label">Zero-Day Retrieval (FAISS)</span>
+        <p class="note-text">Vector <strong>z</strong> queries an in-memory vector store of zero-day spoof clusters, delivering <strong>instant protection against unseen voice engines</strong> without waiting for model retraining.</p>
+      </div>
+      <div class="note-block">
+        <span class="note-label">Multi-Factor Suppression</span>
+        <p class="note-text">Fuses acoustic score with carrier ANI spoof validation, mobile cell tower routing, and SIM swap status to eliminate false alarms on legitimate calls.</p>
+      </div>
+    </div>
+
+    <!-- TRIAGING TIERS -->
+    <div class="triaging-grid">
+      <div class="t-box t-green">
+        <div class="t-header" style="color:var(--c-green);">GREEN ZONE (S_t &lt; 0.30)</div>
+        <p class="t-desc">Silent pass. Displays green "Verified" badge on agent UI. Call proceeds with 0% friction.</p>
+      </div>
+      <div class="t-box t-yellow">
+        <div class="t-header" style="color:var(--c-amber);">YELLOW ZONE (0.30 ≤ S_t ≤ 0.80)</div>
+        <p class="t-desc">Contextual check. Clean telemetry → suppress silently. Ambiguous → automated in-app FaceID/OTP step-up.</p>
+      </div>
+      <div class="t-box t-red">
+        <div class="t-header" style="color:var(--c-coral);">RED ZONE (S_t &gt; 0.80 / Trigger)</div>
+        <p class="t-desc">Immediate transaction lock (wires/profile changes). Escalate to L2 Fraud Ops with forensic logs.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
